@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>노후 계획 세우기</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-gold: #d4af37;
+            --accent-red: #ff7b72;
+            --accent-blue: #58a6ff;
+        }
+        body {
+            font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        h2 {
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 18px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        input {
+            padding: 10px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus {
+            border-color: var(--accent-gold);
+            outline: none;
+        }
+        .result-box {
+            margin-top: 15px;
+            padding: 18px;
+            background: var(--bg-color);
+            border: 1px solid var(--accent-gold);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .highlight-red { color: var(--accent-red); font-weight: bold; }
+        .highlight-blue { color: var(--accent-blue); font-weight: bold; }
+        .placeholder-text { color: var(--text-secondary); text-align: center; padding: 20px; font-style: italic; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎯 노후 계획 세우기 (대한민국 직장인 평균 연봉 역산 플랜)</h2>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>현재 연봉 (만원 단위)</label>
+            <input type="number" id="currentSalary" placeholder="예: 5000 (5천만원)" oninput="calculateTargetAllProducts()">
+        </div>
+        <div class="form-group">
+            <label>은퇴까지 남은 기간 (년)</label>
+            <input type="number" id="targetYears" placeholder="예: 15" min="1" max="40" oninput="calculateTargetAllProducts()">
+        </div>
+    </div>
+    <div id="targetResult">
+        <div class="placeholder-text">현재 연봉과 은퇴 기간을 입력하시면, 매년 평균 연봉만큼의 순수익을 만들기 위한 필요 월 적립액이 계산됩니다.</div>
+    </div>
+</div>
+
+<script>
+    function formatNumber(num) {
+        return Math.round(num).toLocaleString('ko-KR') + '원';
+    }
+
+    function calculateTargetAllProducts() {
+        const rawSalary = parseFloat(document.getElementById('currentSalary').value);
+        const years = parseInt(document.getElementById('targetYears').value);
+
+        if (isNaN(rawSalary) || isNaN(years)) {
+            document.getElementById('targetResult').innerHTML = `<div class="placeholder-text">현재 연봉과 은퇴 기간을 올바르게 입력해주세요.</div>`;
+            return;
+        }
+
+        const annualTargetProfit = rawSalary * 10000;
+        const totalMonths = years * 12;
+
+        const rates = [
+            { name: "성장형 (나스닥 100 / QQQ / 연 15%)", rate: 0.15 },
+            { name: "안정형 (국민연금식 포트폴리오 / 연 10%)", rate: 0.10 }
+        ];
+
+        let html = `<div class="result-box">
+            <div style="font-weight:bold; margin-bottom:10px; color:var(--accent-gold);">[${years}년 뒤 매년 평균 연봉(${formatNumber(annualTargetProfit)})만큼 벌어다주는 역산 결과]</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">`;
+
+        rates.forEach(item => {
+            let requiredAsset = annualTargetProfit / item.rate;
+            let monthlyRate = item.rate / 12;
+            let pmt = requiredAsset * monthlyRate / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+            html += `<div style="background: #161b22; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>${item.name}</strong><br>
+                    <small style="color: var(--text-secondary);">필요 총 자산: ${formatNumber(requiredAsset)} (총 납입: ${formatNumber(pmt * totalMonths)})</small>
+                </div>
+                <div style="text-align: right;"><span class="highlight-red" style="font-size:15px;">${formatNumber(pmt)}</span> /월</div>
+            </div>`;
+        });
+
+        html += `</div></div>`;
+        document.getElementById('targetResult').innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
