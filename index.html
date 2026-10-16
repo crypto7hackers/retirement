@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>노후 계획 세우기</title>
+    <title>평생 현금흐름 & 은퇴 소득 시뮬레이터</title>
+    <!-- 화면 캡처를 위한 html2canvas 라이브러리 CDN 로드 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -11,37 +13,62 @@
             --text-primary: #f0f6fc;
             --text-secondary: #8b949e;
             --accent-gold: #d4af37;
-            --accent-red: #ff7b72;
+            --accent-green: #34d399;
             --accent-blue: #58a6ff;
+            --accent-red: #ff7b72;
         }
         body {
             font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 25px;
         }
         .container {
-            max-width: 750px;
+            max-width: 850px;
             margin: 0 auto;
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
+            padding: 30px;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
         h2 {
             color: var(--text-primary);
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 10px;
             margin-top: 0;
-            font-size: 18px;
+            font-size: 20px;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #21262d;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        /* 상단 콜아웃 지시사항 박스 스타일 */
+        .callout-box {
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--accent-gold);
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+        .callout-box strong {
+            color: var(--accent-gold);
+            display: block;
+            margin-bottom: 6px;
         }
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .form-group {
             display: flex;
@@ -49,22 +76,34 @@
         }
         label {
             font-weight: bold;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
         }
-        input {
-            padding: 10px;
+        input, select {
+            padding: 12px;
             background: var(--bg-color);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
         }
-        input:focus {
+        input:focus, select:focus {
             border-color: var(--accent-gold);
             outline: none;
         }
+        
+        /* 숫자 입력창 우측 화살표(스핀 버튼) 제거 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
         .result-box {
             margin-top: 15px;
             padding: 18px;
@@ -72,30 +111,165 @@
             border: 1px solid var(--accent-gold);
             border-radius: 8px;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
         .highlight-red { color: var(--accent-red); font-weight: bold; }
         .highlight-blue { color: var(--accent-blue); font-weight: bold; }
-        .placeholder-text { color: var(--text-secondary); text-align: center; padding: 20px; font-style: italic; font-size: 13px; }
+        
+        .feedback-box {
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feedback-good {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+        .feedback-low {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        .feedback-danger {
+            background: rgba(255, 123, 114, 0.15);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+        .placeholder-text { color: var(--text-secondary); text-align: center; padding: 25px; font-style: italic; font-size: 14px; }
+
+        /* 하단 액션 세션 및 수정된 가이드 스타일 */
+        .action-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #161b22;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            text-align: center;
+        }
+        .action-guide {
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--accent-gold);
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-align: left;
+            line-height: 1.6;
+        }
+        .action-guide strong {
+            color: var(--accent-gold);
+            display: block;
+            margin-bottom: 6px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 12px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .btn-capture {
+            background: var(--accent-blue);
+            color: #0d1117;
+        }
+        .btn-capture:hover { background: #388bfd; }
+        
+        .btn-kakao {
+            background: #fee500;
+            color: #3c1e1e;
+        }
+        .btn-kakao:hover { background: #fada0a; }
+
+        .btn-notion {
+            background: #2f363d;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-notion:hover { background: #444c56; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🎯 노후 계획 세우기 (대한민국 직장인 평균 연봉 역산 플랜)</h2>
-    <div class="form-grid">
-        <div class="form-group">
-            <label>현재 연봉 (만원 단위)</label>
-            <input type="number" id="currentSalary" placeholder="예: 5000 (5천만원)" oninput="calculateTargetAllProducts()">
+<div class="container" id="captureArea">
+    <h2>평생 현금흐름 & 은퇴 소득 시뮬레이터</h2>
+
+    <div class="section">
+        <!-- 상단 콜아웃 지시사항 박스 -->
+        <div class="callout-box">
+            <strong>📌 안내 지시사항</strong>
+            1. 현재 연 소득을 입력해 주세요.<br>
+            2. 연 소득만큼 투자 소득이 발생했으면 하는 시기를 입력해 주세요.
         </div>
-        <div class="form-group">
-            <label>은퇴까지 남은 기간 (년)</label>
-            <input type="number" id="targetYears" placeholder="예: 15" min="1" max="40" oninput="calculateTargetAllProducts()">
+
+        <div class="form-grid">
+            <!-- 첫 번째 줄 -->
+            <div class="form-group">
+                <label>현재 연 소득</label>
+                <input type="number" id="currentSalary" placeholder="예: 5000 (5천만원)" oninput="calculateTargetAllProducts()">
+            </div>
+            <div class="form-group">
+                <label>희망 은퇴 시기 (년 후)</label>
+                <input type="number" id="targetYears" placeholder="예: 15" min="1" max="40" oninput="calculateTargetAllProducts()">
+            </div>
+
+            <!-- 두 번째 줄 -->
+            <div class="form-group">
+                <label>가구 형태</label>
+                <select id="householdType" onchange="calculateTargetAllProducts()">
+                    <option value="" disabled selected>선택해 주세요</option>
+                    <option value="single">미혼 / 1인 가구</option>
+                    <option value="single_gen">외벌이 가구</option>
+                    <option value="dual">맞벌이 가구</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>자녀 유무</label>
+                <select id="hasChild" onchange="calculateTargetAllProducts()">
+                    <option value="" disabled selected>선택해 주세요</option>
+                    <option value="no">자녀 없음</option>
+                    <option value="yes">자녀 있음</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="targetResult">
+            <div class="placeholder-text">항목을 모두 입력하시면 맞춤 시뮬레이션 결과가 나타납니다.</div>
+        </div>
+
+        <!-- 하단 제출 및 공유 액션 영역 (버튼 3개) -->
+        <div class="action-container" id="actionSection" style="display: none;">
+            <div class="action-guide">
+                <strong>💡 다음 단계 안내</strong>
+                1. <b>[결과 화면 캡처]</b> 버튼을 눌러 시뮬레이션 결과를 이미지로 저장해 주세요.<br>
+                2. 우선 상담을 희망하시는 경우, <b>[캡처본 제출 & 우선 상담 신청]</b> 버튼을 눌러 캡처본을 전달해 주시면 더욱 정확하고 빠른 맞춤 컨설팅이 진행됩니다.
+            </div>
+            <div class="btn-group">
+                <button class="action-btn btn-capture" onclick="captureScreen()">📸 결과 화면 캡처</button>
+                <a href="https://pf.kakao.com/_tGxfaX/chat" target="_blank" class="action-btn btn-kakao">💬 캡처본 제출 & 우선 상담 신청</a>
+                <a href="https://finascent.oopy.io/" target="_blank" class="action-btn btn-notion">📖 필수! 필독 칼럼</a>
+            </div>
         </div>
     </div>
-    <div id="targetResult">
-        <div class="placeholder-text">현재 연봉과 은퇴 기간을 입력하시면, 매년 평균 연봉만큼의 순수익을 만들기 위한 필요 월 적립액이 계산됩니다.</div>
-    </div>
+
 </div>
 
 <script>
@@ -103,43 +277,94 @@
         return Math.round(num).toLocaleString('ko-KR') + '원';
     }
 
+    function getRecommendedRate(hType, hasChild) {
+        if (!hType) return 40;
+        if (hType === 'single') return 50; 
+        if (hType === 'dual') {
+            return hasChild === 'yes' ? 35 : 45; 
+        }
+        if (hType === 'single_gen') {
+            return hasChild === 'yes' ? 30 : 40; 
+        }
+        return 40;
+    }
+
+    function getFeasibilityFeedback(ratio, hType, hasChild) {
+        let targetRate = getRecommendedRate(hType, hasChild);
+
+        if (ratio > targetRate + 20) {
+            return `<div class="feedback-box feedback-danger">
+                <span>🔥 <b>주의:</b> 필수 저축 비중이 연 소득의 <b>${ratio.toFixed(1)}%</b>로 너무 높습니다. 현금 흐름 부족 위험이 있으니 달성 기간을 더 늘리는 것을 권장합니다.</span>
+            </div>`;
+        } else if (ratio >= targetRate) {
+            return `<div class="feedback-box feedback-good">
+                <span>👍 <b>우수:</b> 귀하의 가구 기준 권장 저축률(<b>${targetRate}% 이상</b>)을 충족하는 아주 건전하고 안정적인 플랜입니다!</span>
+            </div>`;
+        } else {
+            return `<div class="feedback-box feedback-low">
+                <span>💡 <b>참고:</b> 귀하의 가구 기준 권장 저축률(<b>${targetRate}%</b>)보다 다소 낮은 편입니다. 여유가 있다면 저축 비중을 늘려 자산 형성 속도를 높여보세요.</span>
+            </div>`;
+        }
+    }
+
     function calculateTargetAllProducts() {
         const rawSalary = parseFloat(document.getElementById('currentSalary').value);
         const years = parseInt(document.getElementById('targetYears').value);
+        const hType = document.getElementById('householdType').value;
+        const hasChild = document.getElementById('hasChild').value;
+        const actionSection = document.getElementById('actionSection');
 
-        if (isNaN(rawSalary) || isNaN(years)) {
-            document.getElementById('targetResult').innerHTML = `<div class="placeholder-text">현재 연봉과 은퇴 기간을 올바르게 입력해주세요.</div>`;
+        if (isNaN(rawSalary) || isNaN(years) || !hType || !hasChild) {
+            document.getElementById('targetResult').innerHTML = `<div class="placeholder-text">항목을 모두 입력하시면 맞춤 시뮬레이션 결과가 나타납니다.</div>`;
+            actionSection.style.display = 'none';
             return;
         }
 
-        const annualTargetProfit = rawSalary * 10000;
+        const annualSalaryReal = rawSalary * 10000;
         const totalMonths = years * 12;
 
-        const rates = [
-            { name: "성장형 (나스닥 100 / QQQ / 연 15%)", rate: 0.15 },
-            { name: "안정형 (국민연금식 포트폴리오 / 연 10%)", rate: 0.10 }
+        const strategies = [
+            { name: "🚀 성장형 포트폴리오 (미국 주식형 / 연 15%)", rate: 0.15 },
+            { name: "🛡 안정형 포트폴리오 (국민연금형 / 연 10%)", rate: 0.10 }
         ];
 
+        let modeText = "현재 연 소득과 동일한 평생 현금흐름 창출 기준";
+        
         let html = `<div class="result-box">
-            <div style="font-weight:bold; margin-bottom:10px; color:var(--accent-gold);">[${years}년 뒤 매년 평균 연봉(${formatNumber(annualTargetProfit)})만큼 벌어다주는 역산 결과]</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">`;
+            <div style="font-weight:bold; margin-bottom:12px; color:var(--accent-gold);">[${years}년 뒤 목표 - ${modeText}]</div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">`;
 
-        rates.forEach(item => {
-            let requiredAsset = annualTargetProfit / item.rate;
+        strategies.forEach(item => {
             let monthlyRate = item.rate / 12;
+            let targetProfit = annualSalaryReal * 1.0; // 소득 100% 고정
+            let requiredAsset = targetProfit / item.rate;
             let pmt = requiredAsset * monthlyRate / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+            let incomeRatio = (pmt * 12) / annualSalaryReal * 100;
 
-            html += `<div style="background: #161b22; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            html += `<div style="background: #161b22; padding: 14px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <strong style="color: var(--text-primary); font-size:14px;">${item.name}</strong><hr style="border-color: var(--border-color); margin: 8px 0;">
                 <div>
-                    <strong>${item.name}</strong><br>
-                    <small style="color: var(--text-secondary);">필요 총 자산: ${formatNumber(requiredAsset)} (총 납입: ${formatNumber(pmt * totalMonths)})</small>
+                    • 필요 목표 자산: <b>${formatNumber(requiredAsset)}</b> (매년 연 ${formatNumber(targetProfit)} 수익 창출)<br>
+                    • 필요 월 적립액: <span class="highlight-red" style="font-size:16px;">${formatNumber(pmt)}</span> /월<br>
+                    • 소득 대비 저축 비중: 현재 연 소득의 <b>${incomeRatio.toFixed(1)}%</b> 저축 필요
                 </div>
-                <div style="text-align: right;"><span class="highlight-red" style="font-size:15px;">${formatNumber(pmt)}</span> /월</div>
+                ${getFeasibilityFeedback(incomeRatio, hType, hasChild)}
             </div>`;
         });
 
         html += `</div></div>`;
         document.getElementById('targetResult').innerHTML = html;
+        actionSection.style.display = 'block';
+    }
+
+    function captureScreen() {
+        const targetElement = document.getElementById('captureArea');
+        html2canvas(targetElement, { backgroundColor: '#161b22', scale: 2 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = '자산설계_시뮬레이션_결과.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
     }
 </script>
 
