@@ -115,7 +115,7 @@
         }
         .highlight-red { color: var(--accent-red); font-weight: bold; }
         .highlight-green { color: var(--accent-green); font-weight: bold; }
-        .highlight-blue { color: var(--accent-blue); font-weight: bold; }
+        .highlight-gold { color: var(--accent-gold); font-weight: bold; }
         
         .feedback-box {
             margin-top: 8px;
@@ -141,7 +141,7 @@
             color: var(--accent-red);
         }
 
-        /* [리뉴얼] 원형 그래프 + 우측 화살표 산출 방식 시각화 */
+        /* 원형 그래프 + 우측 화살표 산출 방식 시각화 */
         .visual-portfolio {
             margin-top: 12px;
             background: #161b22;
@@ -221,7 +221,7 @@
             font-size: 12px;
         }
 
-        /* 한 줄 정돈된 하단 요약 박스 */
+        /* 하단 요약 박스 (가운데 정렬) */
         .portfolio-summary-box {
             background: rgba(212, 175, 55, 0.08);
             border: 1px solid var(--accent-gold);
@@ -229,20 +229,72 @@
             border-radius: 6px;
             margin-top: 8px;
             text-align: center;
-            line-height: 1.5;
         }
         .summary-highlight-row {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            align-items: center;
+            gap: 10px;
             font-weight: bold;
             font-size: 12px;
             color: var(--text-primary);
-            margin-bottom: 6px;
             background: #21262d;
-            padding: 6px;
+            padding: 8px;
             border-radius: 4px;
             border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        /* 카드형 절세 차액 하이라이트 레이아웃 */
+        .tax-card-wrapper {
+            margin-top: 12px;
+            background: #161b22;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .tax-card-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .tax-card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .tax-item-card {
+            background: #21262d;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .tax-card-badge {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-blue);
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+        .tax-card-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .tax-card-val {
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 1.2;
         }
 
         .placeholder-text { 
@@ -256,7 +308,7 @@
         /* 하단 안내 및 액션 세션 */
         .action-container {
             margin-top: 16px;
-            padding: 12px;
+            padding: 14px;
             background: #161b22;
             border: 1px solid var(--border-color);
             border-radius: 10px;
@@ -264,36 +316,40 @@
         .action-guide {
             background: rgba(212, 175, 55, 0.08);
             border: 1px solid var(--accent-gold);
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
-            font-size: 13px;
-            color: var(--text-primary);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             line-height: 1.5;
         }
-        .action-guide strong {
+        .action-guide-title {
             color: var(--accent-gold);
+            font-size: 15px;
+            font-weight: bold;
             display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 8px;
         }
         .target-list {
             list-style: none;
             padding: 0;
             margin: 6px 0 0 0;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-primary);
         }
         .target-list li {
-            margin-bottom: 4px;
-            padding-left: 14px;
+            margin-bottom: 6px;
+            padding-left: 16px;
             position: relative;
+            line-height: 1.4;
         }
         .target-list li::before {
             content: "•";
             color: var(--accent-gold);
             position: absolute;
             left: 0;
+            font-weight: bold;
         }
         
         /* 버튼 반응형 배치 */
@@ -309,10 +365,10 @@
         }
         .action-btn {
             flex: 1;
-            padding: 12px 10px;
+            padding: 13px 10px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             border: none;
             transition: all 0.2s;
@@ -388,10 +444,11 @@
         <!-- 하단 액션 세션 -->
         <div class="action-container" id="actionSection" style="display: none;">
             <div class="action-guide">
-                <strong>💡 다음에 해당하면 1:1 투자·절세 상담 문의를 신청하세요!</strong>
+                <span class="action-guide-title">💡 아래에 해당하신다면 1:1 투자·절세 상담을 신청하세요!</span>
                 <ul class="target-list">
+                    <li>세금 떼이지 않고 100% 온전히 내 자산으로 만드는 절세 전략이 궁금하신 분</li>
                     <li>월 1~2백만 원대 투자로 10년 안에 노후 준비를 끝내고 싶으신 분</li>
-                    <li>서울 내에 내 집 마련하는 현실적인 플랜이 궁금하신 분</li>
+                    <li>서울 내 내 집 마련하는 현실적인 플랜이 궁금하신 분</li>
                     <li>조기 은퇴(FIRE)를 이뤄내고 경제적 자유를 찾고 싶으신 분</li>
                 </ul>
             </div>
@@ -409,6 +466,18 @@
 <script>
     function formatNumber(num) {
         return Math.round(num).toLocaleString('ko-KR') + '원';
+    }
+
+    function formatShortKoreanMoney(num) {
+        let rounded = Math.round(num);
+        if (rounded >= 100000000) {
+            let uk = (rounded / 100000000).toFixed(1);
+            return `약 ${uk}억 원`;
+        } else if (rounded >= 10000) {
+            let man = Math.round(rounded / 10000).toLocaleString('ko-KR');
+            return `약 ${man}만 원`;
+        }
+        return formatNumber(rounded);
     }
 
     function getRecommendedRate(hType, hasChild) {
@@ -455,52 +524,55 @@
         }
 
         const annualSalaryReal = rawSalary * 10000;
-        const monthlySalary = annualSalaryReal / 12;
         const totalMonths = years * 12;
 
-        const recommendedRatio = getRecommendedRate(hType, hasChild) / 100;
-        const maxInvestBudget = monthlySalary * recommendedRatio;
-
-        const strategies = [
-            { name: "🚀 성장형 포트폴리오 (미국 주식형 / 연 15%)", rate: 0.15 },
-            { name: "🛡 안정형 포트폴리오 (국민연금형 / 연 10%)", rate: 0.10 }
-        ];
-
-        // 연 소득 80% 대체 기준 적용
         const targetProfitBase = annualSalaryReal * 0.8;
+
+        const growthRate = 0.15;
+        const growthMonthlyRate = growthRate / 12;
+        const requiredAsset = targetProfitBase / growthRate;
+        const growthPmt = requiredAsset * growthMonthlyRate / (Math.pow(1 + growthMonthlyRate, totalMonths) - 1);
+
+        const stableRate = 0.10;
+        const stableMonthlyRate = stableRate / 12;
+        const stableRequiredAsset = targetProfitBase / stableRate;
+        const stablePmt = stableRequiredAsset * stableMonthlyRate / (Math.pow(1 + stableMonthlyRate, totalMonths) - 1);
+
+        let m10 = 120;
+        let fv10_taxFree = growthPmt * (Math.pow(1 + growthMonthlyRate, m10) - 1) / growthMonthlyRate;
+        let effRate10 = (growthRate * (1 - 0.154)) / 12;
+        let fv10_general = growthPmt * (Math.pow(1 + effRate10, m10) - 1) / effRate10;
+        let diff10 = fv10_taxFree - fv10_general;
+
+        let m20 = 240;
+        let fv20_taxFree = growthPmt * (Math.pow(1 + growthMonthlyRate, m20) - 1) / growthMonthlyRate;
+        let effRate20 = (growthRate * (1 - 0.154)) / 12;
+        let fv20_general = growthPmt * (Math.pow(1 + effRate20, m20) - 1) / effRate20;
+        let diff20 = fv20_taxFree - fv20_general;
+
+        const incomeRatio = (growthPmt * 12) / annualSalaryReal * 100;
 
         let html = `<div class="result-box">
             <div style="font-weight:bold; margin-bottom:10px; color:var(--accent-gold);">[${years}년 뒤 목표 - 연 소득 80% 대체 기준]</div>
             <div style="display: flex; flex-direction: column; gap: 10px;">`;
 
-        strategies.forEach(item => {
-            let monthlyRate = item.rate / 12;
-            let targetProfit = targetProfitBase; 
-            let requiredAsset = targetProfit / item.rate;
-            let pmt = requiredAsset * monthlyRate / (Math.pow(1 + monthlyRate, totalMonths) - 1);
-            let incomeRatio = (pmt * 12) / annualSalaryReal * 100;
+        html += `<div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--text-primary); font-size:13px;">🚀 성장형 포트폴리오 (미국 주식형 / 연 15%)</strong><hr style="border-color: var(--border-color); margin: 6px 0;">
+            <div>
+                • 필요 월 적립액: <span class="highlight-red" style="font-size:15px;">${formatNumber(growthPmt)}</span> /월
+            </div>
+            ${getFeasibilityFeedback(incomeRatio, hType, hasChild)}
+        </div>`;
 
-            let cmaSurplus = maxInvestBudget - pmt;
-            let cmaText = "";
+        let stableIncomeRatio = (stablePmt * 12) / annualSalaryReal * 100;
+        html += `<div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--text-primary); font-size:13px;">🛡 안정형 포트폴리오 (국민연금형 / 연 10%)</strong><hr style="border-color: var(--border-color); margin: 6px 0;">
+            <div>
+                • 필요 월 적립액: <span class="highlight-red" style="font-size:15px;">${formatNumber(stablePmt)}</span> /월
+            </div>
+            ${getFeasibilityFeedback(stableIncomeRatio, hType, hasChild)}
+        </div>`;
 
-            if (cmaSurplus > 0) {
-                cmaText = `<br>• CMA/고금리 파킹통장 추천배분: <span class="highlight-green">${formatNumber(cmaSurplus)}</span> /월 (안정적 비상금 확보 가능)`;
-            } else {
-                cmaText = `<br>• CMA 여유 자금: <span class="highlight-blue">0원</span>`;
-            }
-
-            html += `<div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                <strong style="color: var(--text-primary); font-size:13px;">${item.name}</strong><hr style="border-color: var(--border-color); margin: 6px 0;">
-                <div>
-                    • 필요 목표 자산: <b>${formatNumber(requiredAsset)}</b> (연 ${formatNumber(targetProfit)} 수익)<br>
-                    • 필요 월 적립액: <span class="highlight-red" style="font-size:15px;">${formatNumber(pmt)}</span> /월
-                    ${cmaText}
-                </div>
-                ${getFeasibilityFeedback(incomeRatio, hType, hasChild)}
-            </div>`;
-        });
-
-        // [리뉴얼] 원형 그래프 + 우측 화살표 및 한 줄 정돈된 하단 요약 박스
         html += `
             <div class="visual-portfolio">
                 <div class="visual-title">📊 연 수익률 15% 기댓값 산출 방식 (예시)</div>
@@ -547,9 +619,33 @@
                         <span style="color:var(--border-color);">|</span>
                         <span>🛡 최대 하락폭(MDD) <span style="color:var(--accent-red);">-10% 내외</span></span>
                     </div>
-                    <div style="font-size:11px; color:var(--text-secondary);">
-                        💡 상세한 포트폴리오 및 리밸런싱 전략은 1:1 상담에서 확인하세요.
+                </div>
+
+                <div class="tax-card-wrapper">
+                    <div class="tax-card-header">
+                        ⚠️ 같은 종목이라도 계좌에 따라 최종 수령액이 완전히 달라집니다!
                     </div>
+                    <div class="tax-card-grid">
+                        <div class="tax-item-card">
+                            <div>
+                                <span class="tax-card-badge">10년 뒤 차액</span>
+                                <div class="tax-card-sub">일반 vs 비과세 계좌</div>
+                            </div>
+                            <div class="tax-card-val highlight-gold">${formatShortKoreanMoney(diff10)}</div>
+                        </div>
+
+                        <div class="tax-item-card">
+                            <div>
+                                <span class="tax-card-badge" style="background:rgba(255,123,114,0.15); color:var(--accent-red);">20년 뒤 차액</span>
+                                <div class="tax-card-sub">일반 vs 비과세 계좌</div>
+                            </div>
+                            <div class="tax-card-val highlight-red">${formatShortKoreanMoney(diff20)}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="font-size:11px; color:var(--text-secondary); text-align:center; margin-top:10px;">
+                    💡 상세한 포트폴리오 및 리밸런싱 전략은 1:1 상담에서 확인하세요.
                 </div>
             </div>
         `;
