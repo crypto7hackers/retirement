@@ -468,16 +468,17 @@
         return Math.round(num).toLocaleString('ko-KR') + '원';
     }
 
+    // 🌟 뒤에 "차이!" 텍스트를 결합하도록 개선한 보조 함수
     function formatShortKoreanMoney(num) {
         let rounded = Math.round(num);
         if (rounded >= 100000000) {
             let uk = (rounded / 100000000).toFixed(1);
-            return `약 ${uk}억 원`;
+            return `약 ${uk}억 원 차이!`;
         } else if (rounded >= 10000) {
             let man = Math.round(rounded / 10000).toLocaleString('ko-KR');
-            return `약 ${man}만 원`;
+            return `약 ${man}만 원 차이!`;
         }
-        return formatNumber(rounded);
+        return formatNumber(rounded) + ' 차이!';
     }
 
     function getRecommendedRate(hType, hasChild) {
@@ -628,7 +629,7 @@
                     <div class="tax-card-grid">
                         <div class="tax-item-card">
                             <div>
-                                <span class="tax-card-badge">10년 뒤 차액</span>
+                                <span class="tax-card-badge">10년 뒤 수령액</span>
                                 <div class="tax-card-sub">일반 vs 비과세 계좌</div>
                             </div>
                             <div class="tax-card-val highlight-gold">${formatShortKoreanMoney(diff10)}</div>
@@ -636,7 +637,7 @@
 
                         <div class="tax-item-card">
                             <div>
-                                <span class="tax-card-badge" style="background:rgba(255,123,114,0.15); color:var(--accent-red);">20년 뒤 차액</span>
+                                <span class="tax-card-badge" style="background:rgba(255,123,114,0.15); color:var(--accent-red);">20년 뒤 수령액</span>
                                 <div class="tax-card-sub">일반 vs 비과세 계좌</div>
                             </div>
                             <div class="tax-card-val highlight-red">${formatShortKoreanMoney(diff20)}</div>
